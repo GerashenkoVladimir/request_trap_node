@@ -1,11 +1,18 @@
 {
   "name": "request_trap_node",
   "version": "1.0.0",
-  "description": "",
+  "description": "request trap",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app.js",
+    "startDev": "nodemon $NODE_DEBUG_OPTION app.js"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.3"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.3"
+  }
 }
