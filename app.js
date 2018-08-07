@@ -10,6 +10,8 @@ db.once('open', function() {
     console.log("succesfull connection");
 });
 
+app.set('view engine', 'ejs');
+
 routes.forEach(function (route) {
     app[route.method](route.path, route.handler);
 });

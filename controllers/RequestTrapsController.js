@@ -2,7 +2,7 @@ const {RequestTraps} = require('../models/RequestTraps');
 
 class RequestTrapsController {
     static helloAction(req, resp) {
-        resp.send("Hello world");
+        resp.render('requestTrap/index')
     }
 
     static requestTrapAction(req, resp) {
@@ -26,7 +26,7 @@ class RequestTrapsController {
                     }).save();
                 }
             })
-            .then(result => resp.send(result))
+            .then(result => resp.render('requestTrap/requestTrap', {request: requestData}))
             .catch(
                 error => {
                     //only demonstration
