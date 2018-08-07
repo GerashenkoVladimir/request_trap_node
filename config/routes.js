@@ -1,10 +1,20 @@
-const {HelloWorldController} = require('../controllers/HelloWorldController');
+const {RequestTrapsController} = require('../controllers/RequestTrapsController');
 
 const routes = [
     {
         method: 'get',
         path: '/',
-        handler: HelloWorldController.helloAction
+        handler: RequestTrapsController.helloAction
+    },
+    {
+        method: 'get',
+        path: '/:trap_id/requests',
+        handler: RequestTrapsController.requestsShowAction
+    },
+    {
+        method: 'get',
+        path: '/*',
+        handler: RequestTrapsController.requestTrapAction
     }
 ];
 
