@@ -1,22 +1,26 @@
 const express = require('express');
-const { routes } = require('./config/routes');
-const app = express();
-
+const { router } = require('./routes');
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/request_trap');
+const { setEnvVars } = require('./config');
+
+const app = express();
 const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function() {
-    console.log("succesfull connection");
+
+
+setEnvVars(app);
+
+mongoose
+  .connect(app.get('DB_HOST'))
+  .catch(err => {
+    console.error('Bad DB connection:', err.stack);
+    process.exit(1);
+  });
+db.once('open', function () {
+  console.log('succesfull connection');
 });
 
-app.set('view engine', 'ejs');
+app.use('/', router);
 
-routes.forEach(function (route) {
-    app[route.method](route.path, route.handler);
-});
-
-
-app.listen(3000, function () {
-    console.log('Request trap app listening on port 3000!');
+app.listen(app.get('PORT'), function () {
+  console.log(`Request trap app listening on port ${app.get('PORT')}!`);
 });

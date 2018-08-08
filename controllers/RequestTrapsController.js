@@ -1,52 +1,42 @@
 const {RequestTraps} = require('../models/RequestTraps');
 
-class RequestTrapsController {
-    static helloAction(req, resp) {
-        resp.render('requestTrap/index')
-    }
+const helloAction = (_, resp) => resp.render('requestTrap/index');
 
-    static requestTrapAction(req, resp) {
-        const trap_id = req.url.split('?')[0].split('/')[1];
-        const requestData = {
-            method: req.method,
-            requestUri: req.url,
-            headers: req.headers,
-            queryParams: req.query
-        };
-        RequestTraps
-            .findOne({requestUri: trap_id})
-            .then(result => {
-                if (result){
-                    result.children.push(requestData);
-                    return result.save()
-                } else {
-                    return new RequestTraps({
-                        requestUri: trap_id,
-                        children: [requestData]
-                    }).save();
-                }
-            })
-            .then(result => resp.render('requestTrap/requestTrap', {request: requestData}))
-            .catch(
-                error => {
-                    //only demonstration
-                    resp.status(500);
-                    resp.send(error)
-                });
-    }
+const requestTrapAction = ({method, url, headers, query}, resp) => {
+  const requestUri = url.split('?')[0].split('/')[1];
+  const request = {
+    method,
+    url,
+    headers,
+    query
+  };
 
-    static requestsShowAction(req, resp) {
-        const trap_id = req.params.trap_id;
-        RequestTraps.find({requestUri: trap_id})
-            .then(
-                results => resp.send(results),
-                error => {
-                    //only demonstration
-                    resp.status(500);
-                    resp.send(error)
-                }
-                );
-    }
-}
+  RequestTraps
+    .findOne({requestUri})
+    .then(result => {
+      if (result) {
+        result.children.push(request);
+        return result.save()
+      } else {
+        return new RequestTraps({
+          requestUri,
+          children: [request]
+        }).save();
+      }
+    })
+    .then(() => resp.render('requestTrap/requestTrap', {request: request}))
+    .catch(error => resp.status(500).send(error));
+};
 
-exports.RequestTrapsController = RequestTrapsController;
+const requestsShowAction = ({params: {trapId}}, resp) => {
+  RequestTraps
+    .find({trapId})
+    .then(results => resp.send(results))
+    .catch(error => resp.status(500).send(error));
+};
+
+module.exports = {
+  helloAction,
+  requestTrapAction,
+  requestsShowAction
+};

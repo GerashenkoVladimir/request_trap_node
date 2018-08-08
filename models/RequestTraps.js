@@ -1,12 +1,16 @@
 const mongoose = require('mongoose');
-const {Schema} = mongoose;
-const {RequestSchema} = require('./Requests');
-
+const { Schema } = mongoose;
 
 const RequestTrapSchema = new Schema({
-    requestUri: String,
-    children: [RequestSchema]
+    trapId: String,
+    children: [new Schema({
+        method: String,
+        url: String,
+        headers: Object,
+        query: Object
+    })]
 });
 
 const RequestTraps = mongoose.model('RequestTraps', RequestTrapSchema);
+
 exports.RequestTraps = RequestTraps;
