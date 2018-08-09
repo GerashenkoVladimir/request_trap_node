@@ -1,18 +1,28 @@
-const express = require('express');
+const app = require('express')();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
 const mongoose = require('mongoose');
+const expressLayouts = require('express-ejs-layouts');
 
 const { router } = require('./routes');
 const { setEnvVars } = require('./config');
 
-const app = express();
 const db = mongoose.connection;
 
 
 setEnvVars(app);
 
+
+app.use(expressLayouts);
+
+app.use((req, resp, next) =>{
+  resp.io = io;
+  next();
+});
+
 app.use('/', router);
 
-const server = app.listen(app.get('PORT'), () => {
+const server = http.listen(app.get('PORT'), () => {
   console.log(`Request trap app listening on port ${app.get('PORT')}!`);
 });
 
@@ -24,4 +34,3 @@ mongoose
   });
 
 db.once('open', () => console.log('succesfull connection'));
-

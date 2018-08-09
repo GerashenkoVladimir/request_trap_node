@@ -10,20 +10,27 @@ const requestTrapAction = async ({method, url, headers, query}, resp) => {
     const result = await RequestTraps.findOne({trapId});
     if (result) {
       result.children.push(request);
-      await result.save()
+      await result.save();
     } else {
-      await RequestTraps({trapId, children: [request]}).save();
+      await new RequestTraps({trapId, children: [request]}).save();
     }
+
+    resp.io.emit(trapId, request);
+
     resp.render('requestTrap/requestTrap', { request });
   } catch (error) {
     resp.status(500).send(error)
   }
 };
 
-const requestsShowAction = async ({params: {trapId}}, resp) => {
+const requestsShowAction = async ({params: { trapId }}, resp) => {
   try {
-    const request = await RequestTraps.find({trapId});
-    resp.send(request);
+    const request = await RequestTraps.findOne({ trapId });
+    if(request){
+      resp.render('requestTrap/show', { request });
+    } else {
+      resp.status(404).send('Not found')
+    }
   } catch (error) {
     resp.status(500).send(error)
   }

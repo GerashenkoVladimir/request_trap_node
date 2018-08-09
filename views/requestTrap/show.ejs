@@ -1,0 +1,64 @@
+<style>
+    p {margin: 0; padding: 0;}
+    td {min-width: 50px;}
+</style>
+<h1><%= request.trapId %></h1>
+<table id="requests" border="1">
+    <% request.children.forEach((child) => { %>
+        <tr>
+            <td>
+                <%= child.id %>
+            </td>
+            <td>
+                <%= child.method %>
+            </td>
+            <td>
+                <%= child.url %>
+            </td>
+            <td>
+                <% for (header in child.headers){ %>
+                    <p><%= header %>: <%= child.headers[header] %></p>
+                <% } %>
+            </td>
+            <td>
+                <% for (q in child.query){ %>
+                    <p><%= q %>: <%= child.query[q] %></p>
+                <% } %>
+            </td>
+        </tr>
+    <% }); %>
+</table>
+<script>
+  $(() => {
+    const trapId = location.pathname.split('?')[0].split('/')[1];
+    console.log(trapId);
+    const socket = io();
+    const buildListItem = (requestObj) => {
+      console.log(requestObj)
+      return `<tr>
+                <td>
+                    NEW
+                </td>
+                <td>
+                    ${ requestObj.method }
+                </td>
+                <td>
+                    ${ requestObj.url }
+                </td>
+                <td>
+                    ${Object.keys(requestObj.headers).map((key) => {
+                        return `<p>${key}: ${requestObj.headers[key]}</p>`
+                    }).join('')}
+                </td>
+                <td>
+                    ${Object.keys(requestObj.query).map((key) => {
+                        return `<p>${key}: ${requestObj.query[key]}</p>`
+                    }).join('')}
+                </td>
+              </tr>`
+    }
+    socket.on(trapId, (newRequestData) => {
+      $('#requests').append(buildListItem(newRequestData));
+    });
+  });
+</script>

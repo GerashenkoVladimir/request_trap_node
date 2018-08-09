@@ -5,8 +5,15 @@
     Method: <%= request.method %>
 </h3>
 <h3>
-    Headers: <%= request.headers %>
+    Headers:
 </h3>
+<% for (header in request.headers){ %>
+    <p><%= header %>: <%= request.headers[header] %></p>
+<% } %>
+
 <h3>
-    QueryParams: <%= request.query %>
+    QueryParams:
 </h3>
+    <% for (q in request.query){ %>
+<p><%= q %>: <%= request.query[q] %></p>
+<% } %>
